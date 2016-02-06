@@ -10,13 +10,19 @@
 
 	<title></title>
 </head>
-
-
-
-<body>
 <div class="content" id="gameContent">
-	<canvas id="game" width = "400" height = "600" style="border:3px solid #dedede;">
-	</canvas>
+    <div id="info-bar">
+        <div id="timer">
+            <span id="time">60</span> sec
+        </div>
+        <button id="pause-button">Pause</button>
+        <div id="score">Score</div>
+    </div>
+    <canvas id="game">
+        Your browser does not support the canvas element.
+    </canvas>
 </div>
+
+<script src="game.js"></script>
 </body>
 </html>

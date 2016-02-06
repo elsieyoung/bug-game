@@ -1,0 +1,26 @@
+#info-bar {
+    width: 400px;
+    border: 1px solid black;
+    border-bottom: 0;
+    text-align: center;
+}
+
+#timer {
+    display: inline-block;
+    float: left;
+}
+
+#pause {
+    display: inline-block;
+}
+
+#score {
+    display: inline-block;
+    float: right;
+}
+
+#game {
+    height: 600px;
+    width: 400px;
+    border: 1px solid black;
+}
