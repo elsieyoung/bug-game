@@ -116,7 +116,7 @@ function update_bug(bug) {
         foodList.splice(foodList.indexOf(bug.food), 1);
 
         if (foodList.length == 0){
-            game_over();
+            finish_game(true);
         }
     }
 
@@ -370,7 +370,7 @@ function set_pause_button(text) {
 
 // Draw score
 function set_score(score) {
-    ctx.clearRect(400, 0, 150, 25);
+    ctx.clearRect(250, 0, 150, 25);
     
     ctx.font = "900 20px Verdana";
     ctx.fillStyle = "#ccffb3";
@@ -402,76 +402,51 @@ function count_down(t) {
 }
 
 // Reference: http://miloq.blogspot.ca/2011/05/coordinates-mouse-click-canvas.html
-function pause() {
-    info_bar.onclick = function(event) {
-        var x = event.x - info_bar.offsetLeft;
-        var y = event.y - info_bar.offsetTop;
-        // Pause game
-        if (!pause_flg &&
-            x > 200 - ctx.measureText("PAUSE").width / 2 && x < 200 + ctx.measureText("PAUSE").width / 2) {
-            pause_flg = true;
-            set_pause_button("RESUME");
-        }
-        // Play game
-        else if (pause_flg &&
-                 x > 200 - ctx.measureText("RESUME").width / 2 && x < 200 + ctx.measureText("RESUME").width / 2) {
-            pause_flg = false;
-            set_pause_button("PAUSE");
-        }
+function pause(event) {
+    var x = event.offsetX;
+    var y = event.offsetY;
+    // Pause game
+    if (!pause_flg &&
+        x > 200 - ctx.measureText("PAUSE").width / 2 && x < 200 + ctx.measureText("PAUSE").width / 2) {
+        pause_flg = true;
+        set_pause_button("RESUME");
+    }
+    // Play game
+    else if (pause_flg &&
+             x > 200 - ctx.measureText("RESUME").width / 2 && x < 200 + ctx.measureText("RESUME").width / 2) {
+        pause_flg = false;
+        set_pause_button("PAUSE");
     }
 }
 
 function finish_game(game_over) {
+    // Save score if highest
     if (sessionStorage.level == 1) {
         if (sessionStorage.score1 == null || sessionStorage.score1 < score) {
             sessionStorage.score1 = score;
         }
-        if (game_over) {
-            pause_flg = true;
-            
-            var final_score = document.getElementById("final_score");
-            final_score.innerHTML = score;
-            
-            var popup = document.getElementById("popup");
-            popup.style.display = "block";
-            
-            var exit = document.getElementById("exit");
-            exit.onclick = function() {
-                window.location = "./a2.html";
-            }
-            
-            var restart = document.getElementById("restart");
-            restart.onclick = function() {
-                sessionStorage.level = 1;
-                window.location = "./game.html";
-            }
-        }
-        else {
-            sessionStorage.level = 2;
-            window.location = "./game.html";
-        }
     }
     else {
-        sessionStorage.level = 1;
-        
         if (sessionStorage.score2 == null || sessionStorage.score2 < score) {
             sessionStorage.score2 = score;
         }
-        var popup = document.getElementById("popup");
-        popup.style.display = "block";
+    }
+    
+    if (game_over || sessionStorage.level == 2) {
+        pause_flg = true;
+        sessionStorage.level = 1;
         
-        var exit = document.getElementById("exit");
-        var restart = document.getElementById("restart");
-        exit.onclick = function() {
-            window.location = "./a2.html";
-        }
-        restart.onclick = function() {
-            window.location = "./game.html";
-        }
+        document.getElementById("final_score").innerHTML = score;
+        document.getElementById("popup").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+    }
+    else {
+        sessionStorage.level = 2;
+        window.location = "./game.html"
     }
 }
 
-
+info_bar.addEventListener('click', pause, false);
 set_score(score)
 set_pause_button("PAUSE");
 set_timer(max_time);
