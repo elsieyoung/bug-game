@@ -270,7 +270,7 @@ function start() {
     }
 
     setInterval(init_bug, (Math.random()*2 + 1) * 1000);
-    setTimeout("play()", 1000/60);
+//    setTimeout("play()", 1000/60);
     play();
 }
 
@@ -357,10 +357,11 @@ function makeBug(x, y, color, dir, opacity) {
 function makeFood(x, y) {
     context.globalAlpha = 0.8;
     var img = new Image();
+    img.src = 'images/1.png';
     img.onload = function () {
         context.drawImage(img, x, y, 25, 25);
     }
-    img.src = 'images/1.png';
+    
 
 
 };
@@ -376,7 +377,7 @@ function makeFood(x, y) {
 
 var pause_flg = false;
 var score = 0;
-var max_time = 10;
+var max_time = 60;
 
 var info_bar = document.getElementById("info-bar");
 var ctx = info_bar.getContext("2d");
@@ -487,9 +488,10 @@ function finish_game(game_over) {
     }
 }
 
-info_bar.addEventListener('click', pause, false);
 set_score(score);
 set_timer(max_time);
+set_pause_button("PAUSE");
+info_bar.addEventListener('click', pause, false);
 count_down(0);
 pause();
 
