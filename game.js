@@ -488,7 +488,7 @@ function finish_game(game_over) {
 }
 
 info_bar.addEventListener('click', pause, false);
-set_score(score)
+set_score(score);
 set_timer(max_time);
 count_down(0);
 pause();
