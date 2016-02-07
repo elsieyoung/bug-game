@@ -7,9 +7,9 @@ function count_down(t) {
     if (t <= max_time) {
         setTimeout(function() {
             if (!pause_flg) {
+                t++;
                 var time = document.getElementById("time");
                 time.innerHTML = max_time - t;
-                t++;
                 count_down(t);
             }
             else {
