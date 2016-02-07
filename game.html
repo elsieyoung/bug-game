@@ -13,16 +13,29 @@
                 <span id="time">60</span> sec
             </div>
             <button id="pause-button">Pause</button>
-            <div id="score">Score</div>
+            <div id="score">Score:
+                <span class="cur_score"></score>
+            </div>
         </div>
-        <canvas id="game" width = "400" height = "600" style="border:3px solid #dedede;">
+        <canvas id="game" width = "400" height = "600">
             Your browser does not support the canvas element.
         </canvas>
-        <div class="popup">
-            
-        </div>
+    </div>
+    
+    <div class="popup">
+        Your Score: <span class="cur_score"></score><br/>
+        
+        <form action="./a2.html" method="post">
+            <input
+            <input type="submit" value="Exit">
+        </form>
+        
+        <form action="./game.html" method="post">
+            <input type="submit" value="Restart">
+        </form>
     </div>
     
     <script src="game.js" type="text/javascript"></script>
+    <script src="canvas.js" type="text/javascript"></script>
     </body>
 </html>

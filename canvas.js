@@ -16,8 +16,8 @@ var Bug = function (x, y, color, vX, vY) {
 
     function start() {
         for (var i = 0; i < bugNum; i++) {
-            var x = 50 + Math.random() * (canvas.width - 100);
-            var y = 20 + Math.random() * (canvas.height - 200);
+            var x = 50 + Math.random() * (canvas.width - 50);
+            var y = 20 + Math.random() * (canvas.height - 100);
 
             var color = getRandomColor();
 
