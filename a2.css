@@ -1,0 +1,14 @@
+form .levels {
+    margin-left: 10px;
+}
+
+form #submit-button {
+    text-align: center;
+}
+
+#level {
+    width: 200px;
+    padding: 10px;
+    border: 1px solid black;
+    margin: 100px auto auto auto;
+}

@@ -1,3 +1,14 @@
+.content {
+    text-align: center;
+    width: 100%;
+}
+
+#game {
+    height: 600px;
+    width: 400px;
+    border: 1px solid black;
+}
+
 #info-bar {
     width: 400px;
     border: 1px solid black;
@@ -8,22 +19,25 @@
 #timer {
     display: inline-block;
     float: left;
-    width: 30%;
+    width: 35%;
 }
 
 #pause {
     display: inline-block;
-    width: 40%;
+    width: 30%;
 }
 
 #score {
     display: inline-block;
     float: right;
-    width: 30%;
+    width: 35%;
 }
 
-#game {
-    height: 600px;
-    width: 400px;
-    border: 1px solid black;
+.popup {
+    position: fixed;
+    top: 30%;
+/*    margin: 30% auto auto auto;*/
+    width: 300px;
+    height: 200px;
+    background-color: 
 }

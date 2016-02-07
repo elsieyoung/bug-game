@@ -4,7 +4,7 @@ var max_time = 60;
 
 function count_down(t) {
     var timerId;
-    if (t <= max_time) {
+    if (t < max_time) {
         setTimeout(function() {
             if (!pause_flg) {
                 t++;
@@ -18,7 +18,7 @@ function count_down(t) {
         }, 1000);
     }
     else {
-        return 0;
+        finish_game();
     }
 }
 
@@ -29,14 +29,18 @@ function pause() {
         // Pause game
         if (!pause_flg) {
             pause_flg = true;
-            pause_button.innerHTML = "Play";
+            pause_button.innerHTML = "PLAY";
         }
         // Play game
         else {
             pause_flg = false;
-            pause_button.innerHTML = "Pause";
+            pause_button.innerHTML = "PAUSE";
         }
     }
+}
+
+function finish_game() {
+    
 }
 
 count_down(0);
