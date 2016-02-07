@@ -2,6 +2,24 @@
 
 var canvas = document.getElementById("game");
 var context = canvas.getContext("2d");
+var score = 0;
+var click_x = 0;
+var click_y = 0;
+
+canvas.addEventListener("mousedown", getPosition, false);
+canvas.addEventListener("mouseup", releasePosition, false);
+
+/// Response to user tapping/clicking
+function getPosition(event) {
+    click_x = event.offsetX;
+    click_y = event.offsetY;
+}
+
+/// Response to user tapping/clicking
+function releasePosition(event) {
+    click_x = 0;
+    click_y = 0;
+}
 
 // Bug Definition
 var Bug = function (x, y, color, point, speed) {
@@ -86,6 +104,7 @@ function update_bug(bug) {
     bug.speed_x = (distance_x / distance) * bug.speed;
     bug.speed_y = (distance_y / distance) * bug.speed;
 
+    collision_detect(bug);
 
     // Move to food
     if (distance > 10) {
@@ -97,17 +116,90 @@ function update_bug(bug) {
         foodList.splice(foodList.indexOf(bug.food), 1);
 
         if (foodList.length == 0){
-            finish_game(true);
+            game_over();
         }
     }
 
+}
+
+function collision_detect(bug) {
+    for (var j = 0; j < bugList.length; j++) {
+        var bug2 = bugList[j];
+        if (bug2 == bug) {
+            return;
+        }
+
+        var dX = bug2.x - bug.x;
+        var dY = bug2.y - bug.y;
+        var distance = Math.sqrt(dX * dX + dY * dY);
+
+        if (distance < 30) {
+            // Let bug2 go through
+            if (bug.speed < bug2.speed) {
+                // bug on the left
+                if (bug.x < bug2.x) {
+                    bug.x = bug.x - 10;
+                }
+                // bug on the right
+                else {
+                    bug.x = bug.x + 10;
+                }
+                // Let bug go through
+            } else if (bug.speed > bug2.speed) {
+                // bug2 on the right
+                if (bug.x < bug2.x) {
+                    bug2.x = bug2.x + 10;
+                }
+                // bug2 on the left
+                else {
+                    bug2.x = bug2.x - 10;
+                }
+                // Same speed
+            } else if (bug.speed == bug2.speed) {
+                // bug on the left
+                if (bug.x < bug2.x) {
+                    bug.x = bug.x - 15;
+                }
+                // bug2 on the left
+                else {
+                    bug2.x = bug.x - 15;
+                }
+            }
+
+        }
+    }
+}
+
+// Kill the Bug
+function kill(click_x,click_y,i){
+    var x = click_x;
+    var y = click_y;
+    var cx = bugList[i].x - click_x;
+    var cy = bugList[i].y - click_y;
+    var click_dist = Math.sqrt(cx*cx + cy*cy);
+    if (click_dist < 30) {
+        if (bugList[i].color == "orange"){
+            score += 1;
+            set_score(score);
+        }
+        else if (bugList[i].color == "red"){
+            score += 3;
+            set_score(score);
+        }
+        else {
+            score += 5;
+            set_score(score);
+        }
+        return true;
+    }
+    return false;
 }
 
 function init_food() {
     //Initialize food
     for(var j = 0; j < foodNum; j++){
         var x = Math.floor(Math.random() * (350 - 50) + 50);
-        var y = Math.floor(Math.random() * (550 - 50) + 50);
+        var y = Math.floor(Math.random() * (550 - 100) + 100);
         foodList.push(new Food(x, y));
     }
 }
@@ -115,7 +207,15 @@ function init_food() {
 
 function start() {
     context.clearRect(0, 0, canvas.width, canvas.height);
+
     if (!pause_flg) {
+        for(var k = 0; k < bugList.length; k++){
+            if(kill(click_x,click_y,k) == true){
+                bugList.splice(bugList[k], 1);
+                break;
+            }
+        }
+
         bugList.forEach(function(bug){
             update_bug(bug);
             makeBug(bug.x, bug.y, bug.color);
@@ -123,34 +223,22 @@ function start() {
         foodList.forEach(function(food){
             makeFood(food.x, food.y);
         });
+        requestAnimationFrame(start);
+    } else {
+        bugList.forEach(function(bug){
+            makeBug(bug.x, bug.y, bug.color);
+        });
+        foodList.forEach(function(food){
+            makeFood(food.x, food.y);
+        });
+        requestAnimationFrame(start);
     }
-
-    requestAnimationFrame(start);
 }
 
 init_food();
 setInterval(init_bug, Math.random()*3000);
 start();
 
-
-
-//function animate(bug) {
-//
-//    bug.x += bug.speed_x;
-//    bug.y += bug.speed_y;
-//
-//        // Collision
-//        //if (bugList[i].x < 5 || bugList[i].x > canvas.width - 12) {
-//        //    bugList[i].speed_x *= -1;
-//        //} else if (bugList[i].y < 5 || bugList[i].y > canvas.height - 40) {
-//        //    bugList[i].speed_y *= -1;
-//        //}
-//
-//
-//    context.clearRect(0, 0, canvas.width, canvas.height);
-//    makeBug(bug.x, bug.y, bug.color);
-//    setTimeout(animate, 500);
-//}
 
 // Painting one bug with x, y and color
 function makeBug(x, y, color) {
@@ -235,8 +323,6 @@ function makeFood(x, y) {
 
 
 };
-
-start();
 
 // __________________info-bar___________________________
 //var canvas = document.getElementById("info-bar");
