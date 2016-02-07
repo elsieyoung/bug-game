@@ -2,7 +2,7 @@
     text-align: center;
 }
 
-form .levels {
+.levels {
     margin-left: 10px;
 }
 
@@ -23,7 +23,7 @@ form .levels {
     z-index: 2;
 }
 
-form #submit-button {
+#submit-button button {
     position: absolute;
     bottom: 10px;
     right: 25%;

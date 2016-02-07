@@ -8,16 +8,10 @@
         <title>Elsie and Asako's Bug Game</title>
     </head>
     <div class="content" id="gameContent">
-        <div id="info-bar">
-            <div id="timer">
-                <span id="time">60</span> sec
-            </div>
-            <button id="pause-button">Pause</button>
-            <div id="score">Score:
-                <span class="cur_score"></score>
-            </div>
-        </div>
-        <canvas id="game" width = "400" height = "600">
+        <canvas id="info-bar" width="400" height="25">
+            Your browser does not support the canvas element.
+        </canvas><br/>
+        <canvas id="game" width = "400" height = "630">
             Your browser does not support the canvas element.
         </canvas>
     </div>
@@ -25,10 +19,8 @@
     <div class="popup">
         Your Score: <span class="cur_score"></score><br/>
         
-        <form action="./a2.html" method="post">
-            <input
-            <input type="submit" value="Exit">
-        </form>
+        <button id="exit">button</button>
+        <button id="exit">button</button>
         
         <form action="./game.html" method="post">
             <input type="submit" value="Restart">

@@ -9,13 +9,11 @@
 </head>
 <div class="content">
     <div id="level">
-        <form action="./game.html" method="post">
-            LEVEL:
-            <input class="levels" type="radio" name="level" value=1>1
-            <input class="levels" type="radio" name="level" value=2>2<br/><br/>
-            HIGH SCORE: <span id="high-score"></span><br/><br/>
-            <div id="submit-button"><input id="submit-button" type="submit" value="START"></div>
-        </form>
+        LEVEL:
+        <input class="levels" type="radio" name="level" value=1>1
+        <input class="levels" type="radio" name="level" value=2>2<br/><br/>
+        HIGH SCORE: <span id="score"></span>
+        <a id="submit-button" href="./game.html"><button>START</button></a>
     </div>
     <canvas id="game">
         Your browser does not support the canvas element.

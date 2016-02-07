@@ -134,3 +134,19 @@ function getRandomColor() {
     }
     return color;
 }
+
+
+function get_score() {
+    var radio_button = document.getElementsByName("level");
+    var score = document.getElementById("score");
+    
+    if (radio_button.value == 1 && sessionStorage.score1 != null) {
+        score.innerHTML = sessionStorage.score1;
+    }
+    else if (radio_button.value == 2 && sessionStorage.score2 != null) {
+        score.innerHTML = sessionStorage.score2;
+    }
+}
+
+get_score();
+sessionStorage.level = 1;
