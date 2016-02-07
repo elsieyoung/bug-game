@@ -236,7 +236,6 @@ function makeFood(x, y) {
 
 };
 
-<<<<<<< HEAD
 start();
 
 // __________________info-bar___________________________
@@ -250,7 +249,7 @@ start();
 
 var pause_flg = false;
 var score = 0;
-var max_time = 5;
+var max_time = 60;
 
 var info_bar = document.getElementById("info-bar");
 var ctx = info_bar.getContext("2d");
@@ -318,7 +317,7 @@ function count_down(t) {
 
 // Reference: http://miloq.blogspot.ca/2011/05/coordinates-mouse-click-canvas.html
 function pause() {
-    canvas.onclick = function(event) {
+    info_bar.onclick = function(event) {
         var x = event.x - info_bar.offsetLeft;
         var y = event.y - info_bar.offsetTop;
         // Pause game
@@ -346,14 +345,13 @@ function finish_game() {
     }
     else {
         if (sessionStorage.score2 == null || sessionStorage.score2 < score) {
-            sessionStorage.score2 = score;
+            sessionStorage.score2 = 2;
         }
         var popup = document.getElementById("popup");
-        popup.style.display = '';
+        popup.style.display = "block";
         
         var exit = document.getElementById("exit");
         var restart = document.getElementById("restart");
-        
         exit.onclick = function() {
             window.location = "./a2.html";
         }
