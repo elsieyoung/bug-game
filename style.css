@@ -8,15 +8,18 @@
 #timer {
     display: inline-block;
     float: left;
+    width: 30%;
 }
 
 #pause {
     display: inline-block;
+    width: 40%;
 }
 
 #score {
     display: inline-block;
     float: right;
+    width: 30%;
 }
 
 #game {

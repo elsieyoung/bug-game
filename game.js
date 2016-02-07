@@ -1,24 +1,25 @@
-var pause_flg = 0;
+var pause_flg = false;
+var score = 0;
+var max_time = 60;
 
-
-
-// Counter code from
-// http://stackoverflow.com/questions/5226285/settimeout-in-for-loop-does-not-print-consecutive-values
-
-function count_down() {
-    var t = 0;
-    while (t <= 60) {
-        t++;
-        count_down_helper(t);
+function count_down(t) {
+    var timerId;
+    if (t <= max_time) {
+        setTimeout(function() {
+            if (!pause_flg) {
+                var time = document.getElementById("time");
+                time.innerHTML = max_time - t;
+                t++;
+                count_down(t);
+            }
+            else {
+                count_down(t);
+            }
+        }, 1000);
     }
-}
-
-function count_down_helper(t) {
-    var time = document.getElementById("time");
-    //    while (pause_flg == 1) {
-    //        null;
-    //    }
-    setTimeout(function() { time.innerHTML = 60 - t; }, t*1000);
+    else {
+        return 0;
+    }
 }
 
 function pause() {
@@ -26,18 +27,17 @@ function pause() {
     
     pause_button.onclick = function() {
         // Pause game
-        if (pause_flg == 0) {
-            pause_flg = 1;
+        if (!pause_flg) {
+            pause_flg = true;
             pause_button.innerHTML = "Play";
         }
         // Play game
         else {
-            pause_flg = 0;
+            pause_flg = false;
             pause_button.innerHTML = "Pause";
         }
     }
 }
 
-count_down();
-
+count_down(0);
 pause();
