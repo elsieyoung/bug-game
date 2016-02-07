@@ -96,9 +96,9 @@ function update_bug(bug) {
     else{
         foodList.splice(foodList.indexOf(bug.food), 1);
 
-        //if (foodList.length == 0){
-        //    game_over();
-        //}
+        if (foodList.length == 0){
+            finish_game(true);
+        }
     }
 
 }
@@ -249,7 +249,7 @@ start();
 
 var pause_flg = false;
 var score = 0;
-var max_time = 60;
+var max_time = 10;
 
 var info_bar = document.getElementById("info-bar");
 var ctx = info_bar.getContext("2d");
@@ -311,7 +311,7 @@ function count_down(t) {
     }
     else {
         set_timer(max_time - t);
-        finish_game();
+        finish_game(false);
     }
 }
 
@@ -335,17 +335,41 @@ function pause() {
     }
 }
 
-function finish_game() {
+function finish_game(game_over) {
     if (sessionStorage.level == 1) {
-        sessionStorage.level = 2;
         if (sessionStorage.score1 == null || sessionStorage.score1 < score) {
             sessionStorage.score1 = score;
         }
-        window.location = "./game.html";
+        if (game_over) {
+            pause_flg = true;
+            
+            var final_score = document.getElementById("final_score");
+            final_score.innerHTML = score;
+            
+            var popup = document.getElementById("popup");
+            popup.style.display = "block";
+            
+            var exit = document.getElementById("exit");
+            exit.onclick = function() {
+                window.location = "./a2.html";
+            }
+            
+            var restart = document.getElementById("restart");
+            restart.onclick = function() {
+                sessionStorage.level = 1;
+                window.location = "./game.html";
+            }
+        }
+        else {
+            sessionStorage.level = 2;
+            window.location = "./game.html";
+        }
     }
     else {
+        sessionStorage.level = 1;
+        
         if (sessionStorage.score2 == null || sessionStorage.score2 < score) {
-            sessionStorage.score2 = 2;
+            sessionStorage.score2 = score;
         }
         var popup = document.getElementById("popup");
         popup.style.display = "block";
@@ -356,7 +380,6 @@ function finish_game() {
             window.location = "./a2.html";
         }
         restart.onclick = function() {
-            sessionStorage.level = 1;
             window.location = "./game.html";
         }
     }
