@@ -3,8 +3,8 @@
 var canvas = document.getElementById("game");
 var context = canvas.getContext("2d");
 var score = 0;
-var click_x = 0;
-var click_y = 0;
+var click_x;
+var click_y;
 
 canvas.addEventListener("mousedown", getPosition, false);
 canvas.addEventListener("mouseup", releasePosition, false);
@@ -28,12 +28,16 @@ var Bug = function (x, y, color, point, speed) {
     this.color = color;
     this.speed = speed;
     this.point = point;
+    this.size = 30;
 
     this.food = 0;
     this.food_x = 0;
     this.food_y = 0;
     this.speed_x = 0;
     this.speed_y = 0;
+    this.dir = 0;
+    this.opacity = 0.8;
+    this.killed = false;
 }
 
 // Food Definition
@@ -50,8 +54,8 @@ var foodList = [];
 function init_bug() {
     // Initialize bugs
     if (!pause_flg) {
-        var x = 50 + Math.random() * (canvas.width - 100);
-        var y = 0;
+        var x = Math.random()*380 + 10;
+        var y = 10;
 
         var colorList = ['black', 'black', 'black','red','red','red', 'orange', 'orange', 'orange', 'orange'];
         var color = colorList[parseInt((Math.random() * 10), 10)];
@@ -104,16 +108,22 @@ function update_bug(bug) {
     bug.speed_x = (distance_x / distance) * bug.speed;
     bug.speed_y = (distance_y / distance) * bug.speed;
 
+    // Direction of the bug
+    var degree = Math.atan2(distance_y, distance_x);
+    bug.dir = degree * Math.PI / 180;
+
     collision_detect(bug);
 
     // Move to food
-    if (distance > 10) {
+    if (distance > bug.size) {
         bug.x += bug.speed_x;
         bug.y += bug.speed_y;
     }
     // Eat food
     else{
-        foodList.splice(foodList.indexOf(bug.food), 1);
+        if (!bug.killed) {
+            foodList.splice(foodList.indexOf(bug.food), 1);
+        }
 
         if (foodList.length == 0){
             game_over();
@@ -133,36 +143,36 @@ function collision_detect(bug) {
         var dY = bug2.y - bug.y;
         var distance = Math.sqrt(dX * dX + dY * dY);
 
-        if (distance < 30) {
+        if (distance < bug.size * 2) {
             // Let bug2 go through
             if (bug.speed < bug2.speed) {
                 // bug on the left
                 if (bug.x < bug2.x) {
-                    bug.x = bug.x - 10;
+                    bug.x = bug.x - bug.size/2;
                 }
                 // bug on the right
                 else {
-                    bug.x = bug.x + 10;
+                    bug.x = bug.x + bug.size/2;
                 }
                 // Let bug go through
             } else if (bug.speed > bug2.speed) {
                 // bug2 on the right
                 if (bug.x < bug2.x) {
-                    bug2.x = bug2.x + 10;
+                    bug2.x = bug2.x + bug.size/2;
                 }
                 // bug2 on the left
                 else {
-                    bug2.x = bug2.x - 10;
+                    bug2.x = bug2.x - bug.size/2;
                 }
                 // Same speed
             } else if (bug.speed == bug2.speed) {
                 // bug on the left
                 if (bug.x < bug2.x) {
-                    bug.x = bug.x - 15;
+                    bug.x = bug.x - bug.size/2;
                 }
                 // bug2 on the left
                 else {
-                    bug2.x = bug.x - 15;
+                    bug2.x = bug.x - bug.size/2;
                 }
             }
 
@@ -172,145 +182,176 @@ function collision_detect(bug) {
 
 // Kill the Bug
 function kill(click_x,click_y,i){
-    var x = click_x;
-    var y = click_y;
     var cx = bugList[i].x - click_x;
     var cy = bugList[i].y - click_y;
-    var click_dist = Math.sqrt(cx*cx + cy*cy);
-    if (click_dist < 30) {
+    var click_dist = cx*cx + cy*cy;
+    if (click_dist <= 900) {
         if (bugList[i].color == "orange"){
             score += 1;
-            set_score(score);
         }
         else if (bugList[i].color == "red"){
             score += 3;
-            set_score(score);
         }
         else {
             score += 5;
-            set_score(score);
         }
+        set_score(score);
         return true;
     }
     return false;
 }
 
 function init_food() {
-    //Initialize food
-    for(var j = 0; j < foodNum; j++){
-        var x = Math.floor(Math.random() * (350 - 50) + 50);
-        var y = Math.floor(Math.random() * (550 - 100) + 100);
-        foodList.push(new Food(x, y));
+    var x, y;
+    var overlap = true;
+    while(overlap) {
+        overlap = false;
+
+        x = Math.floor(Math.random() * (350 - 50) + 50);
+        y = Math.floor(Math.random() * (550 - 100) + 120);
+
+        for (var k = 0; k < foodList.length; k++) {
+            var food_x = foodList[k].x - x;
+            var food_y = foodList[k].y - y;
+            var food_dist = Math.sqrt(food_x*food_x + food_y*food_y);
+            if(food_dist < 50){
+                overlap = true;
+                break;
+            }
+        }
     }
+    foodList.push(new Food(x, y));
 }
 
 
-function start() {
+function play() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     if (!pause_flg) {
         for(var k = 0; k < bugList.length; k++){
-            if(kill(click_x,click_y,k) == true){
-                bugList.splice(bugList[k], 1);
-                break;
+            if (bugList[k].killed == true) {
+                //opacity
+                bugList[k].opacity -= 1/120;
+
+                if(bugList[k].opacity <= 0){
+                    bugList.splice(bugList[k], 1);
+                }
+            } else {
+                if(kill(click_x,click_y,k)){
+                    bugList[k].killed = true;
+                }
             }
+
         }
+
 
         bugList.forEach(function(bug){
             update_bug(bug);
-            makeBug(bug.x, bug.y, bug.color);
+            makeBug(bug.x, bug.y, bug.color, bug.dir, bug.opacity);
         });
         foodList.forEach(function(food){
             makeFood(food.x, food.y);
         });
-        requestAnimationFrame(start);
+        requestAnimationFrame(play);
     } else {
         bugList.forEach(function(bug){
-            makeBug(bug.x, bug.y, bug.color);
+            makeBug(bug.x, bug.y, bug.color, bug.dir, bug.opacity);
         });
         foodList.forEach(function(food){
             makeFood(food.x, food.y);
         });
-        requestAnimationFrame(start);
+        requestAnimationFrame(play);
     }
 }
 
-init_food();
-setInterval(init_bug, Math.random()*3000);
+function start() {
+    for(var j = 0; j < foodNum; j++){
+        init_food();
+    }
+
+    setInterval(init_bug, (Math.random()*2 + 1) * 1000);
+    setTimeout("play()", 1000/60);
+    play();
+}
+
 start();
 
-
 // Painting one bug with x, y and color
-function makeBug(x, y, color) {
+function makeBug(x, y, color, dir, opacity) {
+
+
+    //context.save();
+    //context.translate(x,y);
+    //context.rotate(dir);
+
 
     //http://www.w3schools.com/tags/canvas_globalalpha.asp
-    context.globalAlpha = 0.5;
+    context.globalAlpha = opacity;
 
     /*-- Whiskers, legs and arms--*/
     context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(x + 5, y + 15);
-    context.lineTo(x + 10, y);
-    context.moveTo(x + 5, y + 20);
-    context.lineTo(x + 4, y + 22);
-    context.lineTo(x + 6, y + 22);
-    context.lineTo(x + 5, y + 20);
-    context.moveTo(x, y + 20);
-    context.lineTo(x + 10, y + 40);
-    context.moveTo(x + 10, y + 20);
-    context.lineTo(x, y + 40);
-    context.lineWidth = 2;
-    context.strokeStyle = color;
+    context.moveTo(x - 8, y - 5);
+    context.lineTo(x - 10, y - 12);
+    context.moveTo(x - 10, y - 12);
+    context.lineTo(x - 13, y - 15);
 
-    /*-- Triangles on the tips --*/
-    context.moveTo(x, y);
-    context.lineTo(x, y + 3);
-    context.lineTo(x + 1.73, y + 2.4);
-    context.lineTo(x, y);
-    context.moveTo(x + 10, y);
-    context.lineTo(x + 8.27, y + 2.4);
-    context.lineTo(x + 10, y + 3);
-    context.lineTo(x + 10, y);
-    context.moveTo(x, y + 20);
-    context.lineTo(x, y + 22);
-    context.lineTo(x + 1.6, y + 21.25);
-    context.lineTo(x, y + 22);
-    context.moveTo(x + 10, y + 20);
-    context.lineTo(x + 8.4, y + 21.25);
-    context.lineTo(x + 10, y + 22);
-    context.lineTo(x + 10, y + 20);
-    context.moveTo(x, y + 40);
-    context.lineTo(x, y + 38);
-    context.lineTo(x + 1.6, y + 38.25);
-    context.lineTo(x, y + 38);
-    context.moveTo(x + 10, y + 40);
-    context.lineTo(x + 8.4, y + 38.25);
-    context.lineTo(x + 10, y + 38);
-    context.lineTo(x + 10, y + 40);
+    context.moveTo(x + 8, y - 5);
+    context.lineTo(x + 10, y - 12);
+    context.moveTo(x + 10, y - 12);
+    context.lineTo(x + 13, y - 15);
+
+    context.moveTo(x - 9, y);
+    context.lineTo(x - 14, y);
+    context.moveTo(x - 14, y);
+    context.lineTo(x - 17, y + 2);
+
+    context.moveTo(x + 9, y);
+    context.lineTo(x + 14, y);
+    context.moveTo(x + 14, y);
+    context.lineTo(x + 17, y + 2);
+
+    context.moveTo(x - 8, y + 5);
+    context.lineTo(x - 10, y + 12);
+    context.moveTo(x - 10, y + 12);
+    context.lineTo(x - 13, y + 15);
+
+    context.moveTo(x + 8, y + 5);
+    context.lineTo(x + 10, y + 12);
+    context.moveTo(x + 10, y + 12);
+    context.lineTo(x + 13, y + 15);
+
+    context.lineWidth = 1.5;
+    context.strokeStyle = "#333333";
     context.stroke();
+
 
     /*-- Body parts --*/
+    var height = 25;
+    var width = 25;
     context.beginPath();
-    context.arc(x + 5, y + 15, 5, 0, 2 * Math.PI);
-    context.moveTo(x + 5, y + 21);
-    context.bezierCurveTo(x, y + 20, x, y + 30, x + 5, y + 38.75);
-    context.moveTo(x + 5, y + 21);
-    context.bezierCurveTo(x + 10, y + 20, x + 10, y + 30, x + 5, y + 38.75);
-    context.fillStyle = color;
+    context.moveTo(x, y - height/2);
+    context.bezierCurveTo(x + width/2, y - height/2,
+        x + width/2, y + height/2,
+        x, y + height/2);
+    context.bezierCurveTo(x - width/2, y + height/2,
+        x - width/2, y - height/2,
+        x, y - height/2);
     context.lineWidth = 1;
-    context.strokeStyle = "#000000"
-    context.stroke();
+    context.fillStyle = color;
+    context.fill();
+    context.beginPath();
+    context.arc(x , y + 13, 6, 0, 2 * Math.PI);
+    context.fillStyle = color;
     context.fill();
 
     /*-- Eyes and Mouth --*/
     context.beginPath();
-    context.arc(x + 3.3, y + 13.2, 1, 0, 2 * Math.PI);
-    context.arc(x + 6.75, y + 13.2, 1, 0, 2 * Math.PI);
+    context.arc(x - 3 , y + 15, 1.5, 0, 2 * Math.PI);
+    context.arc(x + 3, y + 15, 1.5, 0, 2 * Math.PI);
     context.fillStyle = "white";
     context.fill();
-    context.beginPath();
-    context.arc(x + 5, y + 15, 2.5, 0, Math.PI, false);
-    context.stroke();
+    //
+    //context.restore();
 }
 
 function makeFood(x, y) {
@@ -472,7 +513,7 @@ function finish_game(game_over) {
 }
 
 
-set_score(score)
+set_score(score);
 set_pause_button("PAUSE");
 set_timer(max_time);
 count_down(0);
