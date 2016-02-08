@@ -33,6 +33,7 @@ var Bug = function (x, y, color, point, speed) {
     this.food = 0;
     this.food_x = 0;
     this.food_y = 0;
+    this.food_distance = 0;
     this.speed_x = 0;
     this.speed_y = 0;
     this.dir = 0;
@@ -57,18 +58,23 @@ function init_bug() {
         var x = Math.random()*380 + 10;
         var y = 10;
 
+        var mult = 1;
+        if (sessionStorage.level == 2) {
+            mult = 2;
+        }
+
         var colorList = ['black', 'black', 'black','red','red','red', 'orange', 'orange', 'orange', 'orange'];
         var color = colorList[parseInt((Math.random() * 10), 10)];
 
         if (color == 'black') {
             var point = 5;
-            var speed = 1.5;
+            var speed = 1.5 * mult;
         } else if (color == 'red') {
             var point = 3;
-            var speed = 0.75;
+            var speed = 0.75 * mult;
         } else {
             var point = 1;
-            var speed = 0.6;
+            var speed = 0.6 * mult;
         }
 
         bugList.push(new Bug(x, y, color, point, speed));
@@ -103,6 +109,7 @@ function update_bug(bug) {
     bug.food = food;
     bug.food_x = food_x;
     bug.food_y = food_y;
+    bug.food_distance = distance;
 
     // Calculate speed
     bug.speed_x = (distance_x / distance) * bug.speed;
@@ -110,7 +117,7 @@ function update_bug(bug) {
 
     // Direction of the bug
     var degree = Math.atan2(distance_y, distance_x);
-    bug.dir = degree * Math.PI / 180;
+    bug.dir = degree;
 
     var bug2 = collision_detect(bug);
     // Collision
@@ -118,7 +125,7 @@ function update_bug(bug) {
         handle_collision(bug, bug2);
     }
     // Move to food
-    else if (distance -10 > bug.size) {
+    if (!bug.killed && distance > bug.size) {
         bug.x += bug.speed_x;
         bug.y += bug.speed_y;
     }
@@ -132,7 +139,6 @@ function update_bug(bug) {
             finish_game(true);
         }
     }
-
 }
 
 // Returns the onstacle bug if there is a collision
@@ -180,8 +186,8 @@ function handle_collision(bug, bug2) {
 function kill(click_x,click_y,i){
     var cx = bugList[i].x - click_x;
     var cy = bugList[i].y - click_y;
-    var click_dist = cx*cx + cy*cy;
-    if (click_dist <= 900) {
+    var click_dist = Math.sqrt(cx*cx + cy*cy);
+    if (click_dist <= 30) {
         if (bugList[i].color == "orange"){
             score += 1;
         }
@@ -233,7 +239,7 @@ function play() {
                     bugList.splice(bugList[k], 1);
                 }
             } else {
-                if(kill(click_x,click_y,k)){
+                if(!bugList[k].killed && kill(click_x,click_y,k)){
                     bugList[k].killed = true;
                 }
             }
@@ -271,78 +277,77 @@ start();
 
 // Painting one bug with x, y and color
 function makeBug(x, y, color, dir, opacity) {
-
-
-//    context.save();
-//    context.translate(x,y);
-//    context.rotate(dir);
-
-    //http://www.w3schools.com/tags/canvas_globalalpha.asp
+    
+    ////http://www.w3schools.com/tags/canvas_globalalpha.asp
     context.globalAlpha = opacity;
+
+    context.save();
+    context.translate(x, y);
+    context.rotate(dir);
 
     /*-- Whiskers, legs and arms--*/
     context.beginPath();
-    context.moveTo(x - 8, y - 5);
-    context.lineTo(x - 10, y - 12);
-    context.moveTo(x - 10, y - 12);
-    context.lineTo(x - 13, y - 15);
+    context.moveTo(-8, -10);
+    context.lineTo(-13, -15);
+    context.moveTo(-13, -15);
+    context.lineTo(-13, -12);
 
-    context.moveTo(x + 8, y - 5);
-    context.lineTo(x + 10, y - 12);
-    context.moveTo(x + 10, y - 12);
-    context.lineTo(x + 13, y - 15);
+    context.moveTo(0, -10);
+    context.lineTo(0, -17);
+    context.moveTo(0, -17);
+    context.lineTo(2, -17);
 
-    context.moveTo(x - 9, y);
-    context.lineTo(x - 14, y);
-    context.moveTo(x - 14, y);
-    context.lineTo(x - 17, y + 2);
+    context.moveTo(0, 10);
+    context.lineTo(0, 17);
+    context.moveTo(0, 17);
+    context.lineTo(2, 17);
 
-    context.moveTo(x + 9, y);
-    context.lineTo(x + 14, y);
-    context.moveTo(x + 14, y);
-    context.lineTo(x + 17, y + 2);
+    context.moveTo(8, 10);
+    context.lineTo(13, 15);
+    context.moveTo(13, 15);
+    context.lineTo(13, 12);
 
-    context.moveTo(x - 8, y + 5);
-    context.lineTo(x - 10, y + 12);
-    context.moveTo(x - 10, y + 12);
-    context.lineTo(x - 13, y + 15);
+    context.moveTo(-8, 10);
+    context.lineTo(-13, 15);
+    context.moveTo(-13, 15);
+    context.lineTo(-13, 12);
 
-    context.moveTo(x + 8, y + 5);
-    context.lineTo(x + 10, y + 12);
-    context.moveTo(x + 10, y + 12);
-    context.lineTo(x + 13, y + 15);
+    context.moveTo(8, -10);
+    context.lineTo(13, -15);
+    context.moveTo(13, -15);
+    context.lineTo(13, -12);
 
     context.lineWidth = 1.5;
     context.strokeStyle = "#333333";
     context.stroke()
 
     /*-- Body parts --*/
-    var height = 25;
-    var width = 25;
+    var height = 23;
+    var width = 20;
     context.beginPath();
-    context.moveTo(x, y - height/2);
-    context.bezierCurveTo(x + width/2, y - height/2,
-        x + width/2, y + height/2,
-        x, y + height/2);
-    context.bezierCurveTo(x - width/2, y + height/2,
-        x - width/2, y - height/2,
-        x, y - height/2);
+    context.moveTo(0, -height/2);
+    context.bezierCurveTo(width, -height/2,
+        width, height/2,
+        0, height/2);
+    context.bezierCurveTo(-width, height/2,
+        -width, -height/2,
+        0, -height/2);
     context.lineWidth = 1;
     context.fillStyle = color;
     context.fill();
     context.beginPath();
-    context.arc(x , y + 13, 6, 0, 2 * Math.PI);
+
+    context.arc(15 ,0, 7, 0, 2 * Math.PI);
     context.fillStyle = color;
     context.fill();
 
     /*-- Eyes and Mouth --*/
     context.beginPath();
-    context.arc(x - 3 , y + 15, 1.5, 0, 2 * Math.PI);
-    context.arc(x + 3, y + 15, 1.5, 0, 2 * Math.PI);
+    context.arc(17 , -3, 1.5, 0, 2 * Math.PI);
+    context.arc(17, 3, 1.5, 0, 2 * Math.PI);
     context.fillStyle = "white";
     context.fill();
-    //
-//    context.restore();
+    context.restore();
 }
 
 function makeFood(x, y) {
