@@ -28,7 +28,7 @@ var Bug = function (x, y, color, point, speed) {
     this.color = color;
     this.speed = speed;
     this.point = point;
-    this.size = 30;
+    this.size = 25;
 
     this.food = 0;
     this.food_x = 0;
