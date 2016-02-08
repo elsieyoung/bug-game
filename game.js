@@ -117,7 +117,22 @@ function update_bug(bug) {
 
     // Direction of the bug
     var degree = Math.atan2(distance_y, distance_x);
-    bug.dir = degree;
+
+    if(!bug.dir){
+        bug.dir = degree;
+    }else if (bug.dir != degree){
+        if(Math.abs(bug.dir - degree) < Math.PI/36){
+            bug.dir = degree;
+        }else{
+            if((bug.dir - degree) < 0){
+                bug.dir += Math.PI/36;
+            }else{
+                bug.dir -= Math.PI/36;
+            }
+            return
+        }
+    }
+
 
     var bug2 = collision_detect(bug);
     // Collision
