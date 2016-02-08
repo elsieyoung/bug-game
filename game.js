@@ -112,15 +112,18 @@ function update_bug(bug) {
     var degree = Math.atan2(distance_y, distance_x);
     bug.dir = degree * Math.PI / 180;
 
-    collision_detect(bug);
-
+    var bug2 = collision_detect(bug);
+    // Collision
+    if (bug2 != false) {
+        handle_collision(bug, bug2);
+    }
     // Move to food
-    if (distance > bug.size) {
+    else if (distance -10 > bug.size) {
         bug.x += bug.speed_x;
         bug.y += bug.speed_y;
     }
     // Eat food
-    else{
+    else {
         if (!bug.killed) {
             foodList.splice(foodList.indexOf(bug.food), 1);
         }
@@ -132,51 +135,44 @@ function update_bug(bug) {
 
 }
 
+// Returns the onstacle bug if there is a collision
+// Returns false if no collision
 function collision_detect(bug) {
     for (var j = 0; j < bugList.length; j++) {
         var bug2 = bugList[j];
         if (bug2 == bug) {
-            return;
+            continue;
         }
-
+        
         var dX = bug2.x - bug.x;
         var dY = bug2.y - bug.y;
         var distance = Math.sqrt(dX * dX + dY * dY);
-
-        if (distance < bug.size * 2) {
-            // Let bug2 go through
-            if (bug.speed < bug2.speed) {
-                // bug on the left
-                if (bug.x < bug2.x) {
-                    bug.x = bug.x - bug.size/2;
-                }
-                // bug on the right
-                else {
-                    bug.x = bug.x + bug.size/2;
-                }
-                // Let bug go through
-            } else if (bug.speed > bug2.speed) {
-                // bug2 on the right
-                if (bug.x < bug2.x) {
-                    bug2.x = bug2.x + bug.size/2;
-                }
-                // bug2 on the left
-                else {
-                    bug2.x = bug2.x - bug.size/2;
-                }
-                // Same speed
-            } else if (bug.speed == bug2.speed) {
-                // bug on the left
-                if (bug.x < bug2.x) {
-                    bug.x = bug.x - bug.size/2;
-                }
-                // bug2 on the left
-                else {
-                    bug2.x = bug.x - bug.size/2;
-                }
-            }
-
+        
+        if (distance <= bug.size) {
+            return bug2;
         }
+    }
+    
+    return false;
+}
+
+// Moves the bug from a priotized bug
+// while the prioritized bug's position does not change
+function handle_collision(bug, bug2) {
+    // Let bug2 go through
+    if (bug.speed < bug2.speed) {
+        // bug on the left
+        if (bug.x < bug2.x) {
+            bug.x = bug.x - bug.speed;
+        }
+        // bug on the right
+        else {
+            bug.x = bug.x + bug.speed;
+        }
+    }
+    // Move the left bug if they have the same speed
+    else if (bug.speed == bug2.speed && bug.x < bug2.x) {
+        bug.x = bug.x - bug.speed;
     }
 }
 
@@ -241,10 +237,7 @@ function play() {
                     bugList[k].killed = true;
                 }
             }
-
         }
-
-
         bugList.forEach(function(bug){
             update_bug(bug);
             makeBug(bug.x, bug.y, bug.color, bug.dir, bug.opacity);
@@ -280,10 +273,9 @@ start();
 function makeBug(x, y, color, dir, opacity) {
 
 
-    //context.save();
-    //context.translate(x,y);
-    //context.rotate(dir);
-
+//    context.save();
+//    context.translate(x,y);
+//    context.rotate(dir);
 
     //http://www.w3schools.com/tags/canvas_globalalpha.asp
     context.globalAlpha = opacity;
@@ -322,8 +314,7 @@ function makeBug(x, y, color, dir, opacity) {
 
     context.lineWidth = 1.5;
     context.strokeStyle = "#333333";
-    context.stroke();
-
+    context.stroke()
 
     /*-- Body parts --*/
     var height = 25;
@@ -351,7 +342,7 @@ function makeBug(x, y, color, dir, opacity) {
     context.fillStyle = "white";
     context.fill();
     //
-    //context.restore();
+//    context.restore();
 }
 
 function makeFood(x, y) {
