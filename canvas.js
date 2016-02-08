@@ -11,7 +11,7 @@ var Bug = function (x, y, color, vX, vY) {
     this.vY = vY;
 }
 
-    var bugNum = 20;
+    var bugNum = 15;
     var bugList = [];
 
     function start() {
@@ -51,75 +51,72 @@ var Bug = function (x, y, color, vX, vY) {
 
     // Painting one bug with x, y and color
     function makeBug(x, y, color) {
-
         //http://www.w3schools.com/tags/canvas_globalalpha.asp
-        context.globalAlpha = 0.5;
+        context.globalAlpha = 0.8;
 
         /*-- Whiskers, legs and arms--*/
         context.beginPath();
-        context.moveTo(x, y);
-        context.lineTo(x + 5, y + 15);
-        context.lineTo(x + 10, y);
-        context.moveTo(x + 5, y + 20);
-        context.lineTo(x + 4, y + 22);
-        context.lineTo(x + 6, y + 22);
-        context.lineTo(x + 5, y + 20);
-        context.moveTo(x, y + 20);
-        context.lineTo(x + 10, y + 40);
-        context.moveTo(x + 10, y + 20);
-        context.lineTo(x, y + 40);
-        context.lineWidth = 2;
-        context.strokeStyle = color;
+        context.moveTo(x - 8, y - 5);
+        context.lineTo(x - 10, y - 12);
+        context.moveTo(x - 10, y - 12);
+        context.lineTo(x - 13, y - 15);
 
-        /*-- Triangles on the tips --*/
-        context.moveTo(x, y);
-        context.lineTo(x, y + 3);
-        context.lineTo(x + 1.73, y + 2.4);
-        context.lineTo(x, y);
-        context.moveTo(x + 10, y);
-        context.lineTo(x + 8.27, y + 2.4);
-        context.lineTo(x + 10, y + 3);
-        context.lineTo(x + 10, y);
-        context.moveTo(x, y + 20);
-        context.lineTo(x, y + 22);
-        context.lineTo(x + 1.6, y + 21.25);
-        context.lineTo(x, y + 22);
-        context.moveTo(x + 10, y + 20);
-        context.lineTo(x + 8.4, y + 21.25);
-        context.lineTo(x + 10, y + 22);
-        context.lineTo(x + 10, y + 20);
-        context.moveTo(x, y + 40);
-        context.lineTo(x, y + 38);
-        context.lineTo(x + 1.6, y + 38.25);
-        context.lineTo(x, y + 38);
-        context.moveTo(x + 10, y + 40);
-        context.lineTo(x + 8.4, y + 38.25);
-        context.lineTo(x + 10, y + 38);
-        context.lineTo(x + 10, y + 40);
+        context.moveTo(x + 8, y - 5);
+        context.lineTo(x + 10, y - 12);
+        context.moveTo(x + 10, y - 12);
+        context.lineTo(x + 13, y - 15);
+
+        context.moveTo(x - 9, y);
+        context.lineTo(x - 14, y);
+        context.moveTo(x - 14, y);
+        context.lineTo(x - 17, y + 2);
+
+        context.moveTo(x + 9, y);
+        context.lineTo(x + 14, y);
+        context.moveTo(x + 14, y);
+        context.lineTo(x + 17, y + 2);
+
+        context.moveTo(x - 8, y + 5);
+        context.lineTo(x - 10, y + 12);
+        context.moveTo(x - 10, y + 12);
+        context.lineTo(x - 13, y + 15);
+
+        context.moveTo(x + 8, y + 5);
+        context.lineTo(x + 10, y + 12);
+        context.moveTo(x + 10, y + 12);
+        context.lineTo(x + 13, y + 15);
+
+        context.lineWidth = 1.5;
+        context.strokeStyle = "#333333";
         context.stroke();
+
 
         /*-- Body parts --*/
+        var height = 25;
+        var width = 25;
         context.beginPath();
-        context.arc(x + 5, y + 15, 5, 0, 2 * Math.PI);
-        context.moveTo(x + 5, y + 21);
-        context.bezierCurveTo(x, y + 20, x, y + 30, x + 5, y + 38.75);
-        context.moveTo(x + 5, y + 21);
-        context.bezierCurveTo(x + 10, y + 20, x + 10, y + 30, x + 5, y + 38.75);
-        context.fillStyle = color;
+        context.moveTo(x, y - height/2);
+        context.bezierCurveTo(x + width/2, y - height/2,
+            x + width/2, y + height/2,
+            x, y + height/2);
+        context.bezierCurveTo(x - width/2, y + height/2,
+            x - width/2, y - height/2,
+            x, y - height/2);
         context.lineWidth = 1;
-        context.strokeStyle = "#000000"
-        context.stroke();
+        context.fillStyle = color;
+        context.fill();
+        context.beginPath();
+        context.arc(x , y + 13, 6, 0, 2 * Math.PI);
+        context.fillStyle = color;
         context.fill();
 
         /*-- Eyes and Mouth --*/
         context.beginPath();
-        context.arc(x + 3.3, y + 13.2, 1, 0, 2 * Math.PI);
-        context.arc(x + 6.75, y + 13.2, 1, 0, 2 * Math.PI);
+        context.arc(x - 3 , y + 15, 1.5, 0, 2 * Math.PI);
+        context.arc(x + 3, y + 15, 1.5, 0, 2 * Math.PI);
         context.fillStyle = "white";
         context.fill();
-        context.beginPath();
-        context.arc(x + 5, y + 15, 2.5, 0, Math.PI, false);
-        context.stroke();
+
     }
 
     start();
