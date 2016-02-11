@@ -264,7 +264,7 @@ function play() {
             makeBug(bug.x, bug.y, bug.color, bug.dir, bug.opacity);
         });
         foodList.forEach(function(food){
-            new
+            makeFood(food.x, food.y);
         });
         requestAnimationFrame(play);
     } else {
