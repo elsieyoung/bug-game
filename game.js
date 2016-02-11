@@ -5,6 +5,7 @@ var context = canvas.getContext("2d");
 var score = 0;
 var click_x;
 var click_y;
+var bug_size = 37;
 
 canvas.addEventListener("mousedown", getPosition, false);
 canvas.addEventListener("mouseup", releasePosition, false);
@@ -28,8 +29,7 @@ var Bug = function (x, y, color, point, speed) {
     this.color = color;
     this.speed = speed;
     this.point = point;
-    this.size = 25;
-
+    
     this.food = 0;
     this.food_x = 0;
     this.food_y = 0;
@@ -129,7 +129,7 @@ function update_bug(bug) {
             }else{
                 bug.dir -= Math.PI/36;
             }
-            return
+            return;
         }
     }
 
@@ -140,7 +140,7 @@ function update_bug(bug) {
         handle_collision(bug, bug2);
     }
     // Move to food
-    if (!bug.killed && distance > bug.size) {
+    else if (!bug.killed && distance > bug_size/2) {
         bug.x += bug.speed_x;
         bug.y += bug.speed_y;
     }
@@ -165,11 +165,11 @@ function collision_detect(bug) {
             continue;
         }
         
-        var dX = bug2.x - bug.x;
-        var dY = bug2.y - bug.y;
+        var dX = bug.x - bug2.x;
+        var dY = bug.y - bug2.y;
         var distance = Math.sqrt(dX * dX + dY * dY);
         
-        if (distance <= bug.size) {
+        if (distance <= bug_size) {
             return bug2;
         }
     }
@@ -231,7 +231,7 @@ function init_food() {
             var food_x = foodList[k].x - x;
             var food_y = foodList[k].y - y;
             var food_dist = Math.sqrt(food_x*food_x + food_y*food_y);
-            if(food_dist < 50){
+            if(food_dist < bug_size){
                 overlap = true;
                 break;
             }
@@ -243,7 +243,7 @@ function init_food() {
 
 function play() {
     context.clearRect(0, 0, canvas.width, canvas.height);
-
+    
     if (!pause_flg) {
         for(var k = 0; k < bugList.length; k++){
             if (bugList[k].killed == true) {
@@ -264,7 +264,7 @@ function play() {
             makeBug(bug.x, bug.y, bug.color, bug.dir, bug.opacity);
         });
         foodList.forEach(function(food){
-            makeFood(food.x, food.y);
+            new
         });
         requestAnimationFrame(play);
     } else {
@@ -368,20 +368,12 @@ function makeBug(x, y, color, dir, opacity) {
 function makeFood(x, y) {
     context.globalAlpha = 0.8;
     var img = new Image();
-    img.src = 'images/1.png';
+
     img.onload = function () {
         context.drawImage(img, x, y, 25, 25);
-    }
-    
-
-
+    };
+    img.src = './images/1.png';
 };
-
-// __________________info-bar___________________________
-//var canvas = document.getElementById("info-bar");
-//var ctx = canvas.getContext("2d");
-//ctx.font = "20px Impact";
-//ctx.fillText("Hello World",10,50);
 
 
 //_________________ functionalities __________________
@@ -455,20 +447,22 @@ function count_down(t) {
 }
 
 // Reference: http://miloq.blogspot.ca/2011/05/coordinates-mouse-click-canvas.html
-function pause(event) {
-    var x = event.offsetX;
-    var y = event.offsetY;
-    // Pause game
-    if (!pause_flg &&
-        x > 200 - ctx.measureText("PAUSE").width / 2 && x < 200 + ctx.measureText("PAUSE").width / 2) {
-        pause_flg = true;
-        set_pause_button("RESUME");
-    }
-    // Play game
-    else if (pause_flg &&
-             x > 200 - ctx.measureText("RESUME").width / 2 && x < 200 + ctx.measureText("RESUME").width / 2) {
-        pause_flg = false;
-        set_pause_button("PAUSE");
+function pause() {
+    info_bar.onclick = function() {
+        var x = event.offsetX;
+        var y = event.offsetY;
+        // Pause game
+        if (!pause_flg &&
+            x > 200 - ctx.measureText("PAUSE").width / 2 && x < 200 + ctx.measureText("PAUSE").width / 2) {
+            pause_flg = true;
+            set_pause_button("RESUME");
+        }
+        // Play game
+        else if (pause_flg &&
+                 x > 200 - ctx.measureText("RESUME").width / 2 && x < 200 + ctx.measureText("RESUME").width / 2) {
+            pause_flg = false;
+            set_pause_button("PAUSE");
+        }
     }
 }
 
@@ -502,8 +496,6 @@ function finish_game(game_over) {
 set_score(score);
 set_timer(max_time);
 set_pause_button("PAUSE");
-info_bar.addEventListener('click', pause, false);
 count_down(0);
 pause();
-
 
