@@ -18,8 +18,8 @@ function getPosition(event) {
 
 /// Response to user tapping/clicking
 function releasePosition(event) {
-    click_x = null;
-    click_y = null;
+    click_x = -100;
+    click_y = -100;
 }
 
 // Bug Definition
@@ -264,12 +264,14 @@ function play() {
                 b.opacity -= 1/120;
 
                 if(b.opacity <= 0){
+                    //alert(bugList.indexOf(b));
                     bugList.splice(bugList.indexOf(b), 1);
                     break;
                 }
             } else {
-                if(!b.killed && kill(click_x,click_y,k)){
+                if(!b.killed && kill(click_x,click_y,bugList.indexOf(b))){
                     b.killed = true;
+                    break;
                 }
             }
 
