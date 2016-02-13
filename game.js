@@ -18,8 +18,8 @@ function getPosition(event) {
 
 /// Response to user tapping/clicking
 function releasePosition(event) {
-    click_x = 0;
-    click_y = 0;
+    click_x = null;
+    click_y = null;
 }
 
 // Bug Definition
@@ -152,7 +152,7 @@ function update_bug(bug) {
         handle_collision(bug, bug2);
     }
     // Move to food
-    else if (!bug.killed && distance > bug_size/2) {
+    else if (!bug.killed && distance > bug_size) {
         bug.x += bug.speed_x;
         bug.y += bug.speed_y;
     }
@@ -258,22 +258,21 @@ function play() {
     
     if (!pause_flg) {
         for(var k = 0; k < bugList.length; k++){
-            if (bugList[k].killed == true) {
+            var b = bugList[k];
+            if (b.killed == true) {
                 //opacity
-                bugList[k].opacity -= 1/120;
+                b.opacity -= 1/120;
 
-                if(bugList[k].opacity <= 0){
-                    bugList.splice(bugList[k], 1);
+                if(b.opacity <= 0){
+                    bugList.splice(bugList.indexOf(b), 1);
+                    break;
                 }
             } else {
-                if(!bugList[k].killed && kill(click_x,click_y,k)){
-                    bugList[k].killed = true;
+                if(!b.killed && kill(click_x,click_y,k)){
+                    b.killed = true;
                 }
             }
 
-            if (kill(click_x,click_y,k)) {
-                bugList.splice(bugList[k], 1);
-            }
         }
         bugList.forEach(function(bug){
             update_bug(bug);
@@ -381,10 +380,12 @@ function makeBug(x, y, color, dir, opacity) {
 }
 
 function makeFood(x, y) {
+    var width = 25;
+    var height = 25;
     context.globalAlpha = 0.8;
     var img = new Image();
     img.src = './images/1.png';
-    context.drawImage(img, x, y, 25, 25);
+    context.drawImage(img, x - width / 2, y - height / 2, width, height);
 
 };
 
