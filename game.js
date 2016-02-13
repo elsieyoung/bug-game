@@ -121,13 +121,25 @@ function update_bug(bug) {
     if(!bug.dir){
         bug.dir = degree;
     }else if (bug.dir != degree){
-        if(Math.abs(bug.dir - degree) < Math.PI/36){
+        if(Math.abs(bug.dir - degree) < Math.PI/36 ||
+           Math.abs(bug.dir - degree) > 2 * Math.PI + Math.PI/36){
             bug.dir = degree;
         }else{
             if((bug.dir - degree) < 0){
-                bug.dir += Math.PI/36;
+                if (degree - bug.dir > Math.PI) {
+                    bug.dir -= Math.PI/36;
+                }
+                else {
+                    bug.dir += Math.PI/36;
+                }
+                
             }else{
-                bug.dir -= Math.PI/36;
+                if (bug.dir - degree > Math.PI) {
+                    bug.dir += Math.PI/36;
+                }
+                else {
+                    bug.dir -= Math.PI/36;
+                }
             }
             return;
         }
