@@ -118,13 +118,14 @@ function update_bug(bug) {
     // Direction of the bug
     var degree = Math.atan2(distance_y, distance_x);
 
+
     if(!bug.dir){
         bug.dir = degree;
     }else if (bug.dir != degree){
         if(Math.abs(bug.dir - degree) < Math.PI/36 ||
            Math.abs(bug.dir - degree) > 2 * Math.PI + Math.PI/36){
             bug.dir = degree;
-        }else{
+        } else{
             if((bug.dir - degree) < 0){
                 if (degree - bug.dir > Math.PI) {
                     bug.dir -= Math.PI/36;
@@ -144,7 +145,6 @@ function update_bug(bug) {
             return;
         }
     }
-
 
     var bug2 = collision_detect(bug);
     // Collision
@@ -168,7 +168,7 @@ function update_bug(bug) {
     }
 }
 
-// Returns the onstacle bug if there is a collision
+// Returns the obstacle bug if there is a collision
 // Returns false if no collision
 function collision_detect(bug) {
     for (var j = 0; j < bugList.length; j++) {
@@ -270,6 +270,10 @@ function play() {
                     bugList[k].killed = true;
                 }
             }
+
+            if (kill(click_x,click_y,k)) {
+                bugList.splice(bugList[k], 1);
+            }
         }
         bugList.forEach(function(bug){
             update_bug(bug);
@@ -296,7 +300,6 @@ function start() {
     }
 
     setInterval(init_bug, (Math.random()*2 + 1) * 1000);
-//    setTimeout("play()", 1000/60);
     play();
 }
 
@@ -346,7 +349,7 @@ function makeBug(x, y, color, dir, opacity) {
 
     context.lineWidth = 1.5;
     context.strokeStyle = "#333333";
-    context.stroke()
+    context.stroke();
 
     /*-- Body parts --*/
     var height = 23;
@@ -380,11 +383,9 @@ function makeBug(x, y, color, dir, opacity) {
 function makeFood(x, y) {
     context.globalAlpha = 0.8;
     var img = new Image();
-
-    img.onload = function () {
-        context.drawImage(img, x, y, 25, 25);
-    };
     img.src = './images/1.png';
+    context.drawImage(img, x, y, 25, 25);
+
 };
 
 
